@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3b1c8">
+  <title>Одно маленькое приглашение</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #493d49;
+      --muted: #93838f;
+      --pink: #ed5b91;
+      --pink-dark: #d9447d;
+      --pink-light: #ffe7ef;
+      --border: #f2bdcf;
+      --paper: #fffdfd;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100svh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 13% 19%, #fff 0 2px, transparent 3px),
+        radial-gradient(ellipse at 87% 74%, #fff 0 3px, transparent 4px),
+        linear-gradient(145deg, #fff3f6, #f9dce8 54%, #f3ddea);
+      color: var(--ink);
+      font-family: "Comfortaa", "Trebuchet MS", sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .phone {
+      position: relative;
+      width: min(410px, calc(100vw - 22px));
+      height: min(850px, calc(100svh - 22px));
+      min-height: 610px;
+      padding: 17px 11px 11px;
+      border: 7px solid #f1a4be;
+      border-radius: 47px;
+      background: #f5bfd0;
+      box-shadow: 0 28px 75px #9a57743b, inset 0 0 0 2px #ffffff8c;
+    }
+
+    .notch {
+      position: absolute;
+      z-index: 5;
+      top: 7px;
+      left: 50%;
+      width: 105px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transform: translateX(-50%);
+      border-radius: 0 0 15px 15px;
+      background: #f1a4be;
+    }
+
+    .speaker { width: 36px; height: 5px; border-radius: 9px; background: #d27b99; }
+    .camera { width: 7px; height: 7px; border: 1px solid #ffffff8c; border-radius: 50%; background: #89708f; }
+
+    .scene {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+      isolation: isolate;
+      border-radius: 33px;
+      background:
+        radial-gradient(ellipse at 9% 24%, #ffffff70 0 2px, transparent 3px),
+        radial-gradient(ellipse at 90% 69%, #ffffff8c 0 3px, transparent 4px),
+        linear-gradient(155deg, #ffedf2, #fbe1eb 55%, #f6dfeb);
+    }
+
+    .cloud {
+      position: absolute;
+      z-index: -1;
+      width: 90px;
+      height: 27px;
+      border-radius: 30px;
+      background: #a9ddecbb;
+      filter: drop-shadow(0 5px 0 #89cadd2b);
+      animation: float 7s ease-in-out infinite alternate;
+    }
+
+    .cloud::before, .cloud::after {
+      position: absolute;
+      bottom: 6px;
+      content: "";
+      border-radius: 50%;
+      background: inherit;
+    }
+
+    .cloud::before { left: 15px; width: 35px; height: 35px; }
+    .cloud::after { right: 12px; width: 29px; height: 29px; }
+    .cloud-a { top: 16%; left: -33px; }
+    .cloud-b { top: 49%; right: -42px; transform: scale(.78); animation-delay: -2s; }
+    .cloud-c { bottom: 10%; left: -40px; transform: scale(.62); animation-delay: -4s; }
+
+    .sparkle {
+      position: absolute;
+      z-index: -1;
+      color: #fff;
+      font-size: 18px;
+      animation: twinkle 2.8s ease-in-out infinite;
+    }
+    .sparkle-a { top: 26%; right: 12%; }
+    .sparkle-b { bottom: 24%; left: 13%; animation-delay: -1.4s; }
+
+    .screens { position: absolute; inset: 30px 0 0; }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      padding: 15px 13px 16px;
+      overflow-y: auto;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(20px) scale(.99);
+      transition: opacity .3s ease, transform .38s cubic-bezier(.2,.75,.25,1), visibility .38s;
+      scrollbar-width: none;
+    }
+    .screen::-webkit-scrollbar { display: none; }
+    .screen.active { z-index: 1; opacity: 1; visibility: visible; transform: translateX(0) scale(1); }
+
+    .paper {
+      position: relative;
+      z-index: 0;
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 25px 20px;
+      border-radius: 35px 29px 39px 30px / 28px 24px 29px 22px;
+      background: var(--paper);
+      box-shadow: 0 17px 42px #a968842e;
+      text-align: center;
+    }
+
+    .paper::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      border-radius: inherit;
+      background: var(--paper);
+      content: "";
+      filter: url(#wave);
+    }
+
+    .sticker {
+      display: block;
+      width: 160px;
+      height: 160px;
+      flex: 0 0 auto;
+      object-fit: contain;
+      margin: 0 auto 20px;
+      animation: sticker-appear .4s ease both;
+    }
+    .art { display: none; }
+
+    h1 {
+      max-width: 315px;
+      margin: 4px 0 10px;
+      color: var(--ink);
+      font-size: clamp(21px, 6vw, 27px);
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .subtitle {
+      max-width: 290px;
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .actions { width: 100%; display: grid; gap: 11px; margin-top: 14px; }
+    .pill {
+      min-height: 51px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 21px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(115deg, #f66e9b, #e94b84);
+      box-shadow: 0 8px 17px #e8487e40;
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .pill:hover { transform: translateY(-2px); box-shadow: 0 11px 22px #e8487e50; }
+    .pill:active { transform: translateY(1px) scale(.99); }
+    .pill:focus-visible, .choice:focus-visible, input:focus-visible, .calendar:focus-visible {
+      outline: 3px solid #86cfe7;
+      outline-offset: 3px;
+    }
+    .pill.secondary { background: linear-gradient(115deg, #b6a9bf, #968aa4); box-shadow: 0 8px 17px #78668b30; }
+
+    .runway { position: relative; width: 100%; height: 57px; }
+    .runaway { position: absolute; top: 0; left: 50%; min-width: 138px; transform: translateX(-50%); }
+
+    .fields { width: 100%; display: grid; gap: 13px; margin: 12px 0 19px; text-align: left; }
+    .field { display: grid; grid-template-columns: 62px minmax(0, 1fr); align-items: center; gap: 9px; color: #756572; font-size: 13px; font-weight: 700; }
+    .field input {
+      width: 100%;
+      min-width: 0;
+      height: 46px;
+      padding: 0 11px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: #fffafb;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .field input:focus { border-color: var(--pink); outline: none; box-shadow: 0 0 0 3px #f45f911f; }
+
+    .eyebrow { margin: 0 0 2px; color: #d77b9c; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    .choices { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 16px 0 19px; }
+    .choice {
+      min-height: 94px;
+      display: grid;
+      place-content: center;
+      gap: 7px;
+      padding: 10px 7px;
+      border: 2px solid #f2c3d2;
+      border-radius: 18px;
+      background: #fffafb;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .choice:hover { transform: translateY(-2px); border-color: #ed8eaf; }
+    .choice[aria-pressed="true"] { border-color: var(--pink); background: #fff0f5; box-shadow: 0 0 0 3px #f45f911a; }
+    .choice span:first-child { font-size: 30px; line-height: 1; }
+
+    .calendar-actions { width: 100%; display: grid; gap: 9px; margin-top: 13px; }
+    .calendar {
+      min-height: 43px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 13px;
+      border: 1.5px solid #efb2c6;
+      border-radius: 999px;
+      background: #fffafb;
+      color: #c94d79;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .calendar:hover { transform: translateY(-1px); background: #fff0f5; }
+    .status { min-height: 16px; margin-top: 7px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @keyframes float { to { translate: 8px -5px; } }
+    @keyframes twinkle { 50% { opacity: .35; transform: scale(.82) rotate(12deg); } }
+    @keyframes sticker-appear { from { opacity: 0; transform: translateY(6px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    @media (max-width: 430px) {
+      .phone { width: calc(100vw - 14px); padding: 15px 8px 8px; border-width: 6px; border-radius: 41px; }
+      .scene { border-radius: 29px; }
+      .screen { padding: 12px 10px 13px; }
+      .paper { padding: 22px 16px; }
+    }
+    @media (max-height: 700px) {
+      .phone { height: calc(100svh - 14px); min-height: 0; }
+      .paper { padding-block: 15px; }
+      .choice { min-height: 80px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="sr-only" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="wave" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency=".025" numOctaves="2" seed="8" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+      </filter>
+    </defs>
+  </svg>
+
+  <main class="phone" aria-label="Приглашение на свидание">
+    <div class="notch" aria-hidden="true"><span class="speaker"></span><span class="camera"></span></div>
+    <div class="scene">
+      <span class="cloud cloud-a" aria-hidden="true"></span>
+      <span class="cloud cloud-b" aria-hidden="true"></span>
+      <span class="cloud cloud-c" aria-hidden="true"></span>
+      <span class="sparkle sparkle-a" aria-hidden="true">✦</span>
+      <span class="sparkle sparkle-b" aria-hidden="true">✧</span>
+
+      <div class="screens" aria-live="polite">
+        <section class="screen active" data-screen="0" aria-hidden="false">
+          <div class="paper">
+            <img class="sticker" src="https://media1.tenor.com/m/C_2ikwupY4cAAAAd/goma-heart-goma-love.gif" alt="Котик складывает лапы в форме сердечка" onerror="useStickerFallback(this)">
+            <svg class="art" viewBox="0 0 260 205" role="img" aria-label="Полосатый котик дарит белой кошечке розу">
+              <ellipse cx="130" cy="184" rx="92" ry="11" fill="#f7dce6"/>
+              <path d="M43 156c-12-21 2-52 28-55 24-3 43 13 44 39l2 36H58z" fill="#d9a27c"/>
+              <path d="M48 111l-2-27 25 16M88 100l21-20 4 33" fill="#d9a27c" stroke="#b98462" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M53 100l-1-10 13 9M94 101l10-10 2 15" fill="#f1c0c1"/>
+              <path d="M51 119c10 1 17 6 21 14m-18 0c10 1 16 5 19 12m-11-43 2 10m17-9 1 10" fill="none" stroke="#9d674e" stroke-width="4" stroke-linecap="round"/>
+              <ellipse cx="77" cy="115" rx="27" ry="23" fill="#d9a27c"/>
+              <circle cx="68" cy="113" r="2.4" fill="#493d49"/><circle cx="85" cy="113" r="2.4" fill="#493d49"/>
+              <path d="M74 120q4 5 8 0" fill="none" stroke="#855a58" stroke-width="2" stroke-linecap="round"/>
+              <ellipse cx="69" cy="121" rx="5" ry="3" fill="#ef9cac" opacity=".7"/><ellipse cx="87" cy="121" rx="5" ry="3" fill="#ef9cac" opacity=".7"/>
+              <path d="M108 143c14-10 23-10 31 0" fill="none" stroke="#b98462" stroke-width="7" stroke-linecap="round"/>
+              <path d="M111 126l20-14 12 4-18 19" fill="none" stroke="#63a77b" stroke-width="4" stroke-linecap="round"/>
+              <path d="M126 121c-11-12-3-23 5-22 1-9 17-7 17 4 10-4 17 9 5 17l-14 10z" fill="#e74d68"/>
+              <path d="M147 140c7-19 23-31 41-30 20 1 31 18 26 39l-7 27h-62z" fill="#fff" stroke="#eadce2" stroke-width="2"/>
+              <path d="M162 119l-5-25 22 17m20 1 16-24 6 31" fill="#fff" stroke="#eadce2" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M162 106l-1-9 12 9m28 4 9-13 2 17" fill="#f5c6d2"/>
+              <ellipse cx="187" cy="126" rx="25" ry="22" fill="#fff"/>
+              <circle cx="179" cy="124" r="2.4" fill="#493d49"/><circle cx="196" cy="124" r="2.4" fill="#493d49"/>
+              <path d="M184 131q4 5 8 0" fill="none" stroke="#855a58" stroke-width="2" stroke-linecap="round"/>
+              <ellipse cx="174" cy="132" rx="5" ry="3" fill="#f2a6b7"/><ellipse cx="201" cy="132" rx="5" ry="3" fill="#f2a6b7"/>
+              <path d="M142 153c11 6 20 4 26-1" fill="none" stroke="#eadce2" stroke-width="6" stroke-linecap="round"/>
+              <path d="M136 157q-7 2-12-4" fill="none" stroke="#b98462" stroke-width="4" stroke-linecap="round"/>
+              <path d="M113 70l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z" fill="#f6c566"/>
+            </svg>
+            <h1>ты пойдешь со мной на свидание?</h1>
+            <div class="actions">
+              <button class="pill" type="button" data-next="1">Да</button>
+              <div class="runway" id="runway"><button class="pill secondary runaway" id="no-button" type="button">Нет</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="1" aria-hidden="true">
+          <div class="paper">
+            <img class="sticker" src="https://media.tenor.com/CDg7uH_hD84AAAAj/tkthao219-bubududu.gif" alt="Два медвежонка танцуют вместе" onerror="useStickerFallback(this)">
+            <svg class="art short" viewBox="0 0 240 180" role="img" aria-label="Танцующий белый мишка">
+              <ellipse cx="120" cy="164" rx="65" ry="8" fill="#f7dce6"/>
+              <path d="M76 95c-7-23 3-49 26-53 23-5 43 12 43 38 15 8 21 27 13 44-7 17-24 27-44 25-21 2-44-10-46-31-1-9 2-17 8-23z" fill="#fff" stroke="#eadce2" stroke-width="3"/>
+              <circle cx="90" cy="49" r="14" fill="#fff" stroke="#eadce2" stroke-width="3"/><circle cx="139" cy="44" r="14" fill="#fff" stroke="#eadce2" stroke-width="3"/>
+              <circle cx="90" cy="49" r="6" fill="#f2c3d2"/><circle cx="139" cy="44" r="6" fill="#f2c3d2"/>
+              <ellipse cx="119" cy="100" rx="33" ry="28" fill="#fff"/>
+              <circle cx="108" cy="91" r="3" fill="#493d49"/><circle cx="131" cy="91" r="3" fill="#493d49"/>
+              <ellipse cx="120" cy="102" rx="6" ry="4" fill="#503e4a"/><path d="M116 108q4 6 9 0" fill="none" stroke="#9c6d79" stroke-width="2" stroke-linecap="round"/>
+              <ellipse cx="102" cy="105" rx="7" ry="4" fill="#f2a6b7"/><ellipse cx="139" cy="105" rx="7" ry="4" fill="#f2a6b7"/>
+              <path d="M77 104L50 82m102 16 25-25" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+              <path d="M63 90l-9-10m115-2 7-10" fill="none" stroke="#eadce2" stroke-width="3" stroke-linecap="round"/>
+              <path d="M94 145l-7 12m44-11 12 9" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round"/>
+              <path d="M62 57l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1zM177 111l2 5 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z" fill="#f5c35f"/>
+              <path d="M102 61q17 11 33-1" fill="none" stroke="#e66b91" stroke-width="6" stroke-linecap="round"/><path d="M117 67v14" stroke="#e66b91" stroke-width="5"/>
+            </svg>
+            <h1>подожди, ты действительно сказала да?</h1>
+            <p class="subtitle">Я был готов что скажешь «нет» ахах</p>
+            <button class="pill" type="button" data-next="2">Да Да дА</button>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="2" aria-hidden="true">
+          <div class="paper">
+            <img class="sticker" src="https://media.tenor.com/quCBIuCuFJwAAAAj/bubu-holding-and-squeezing-a-heart-bubu-dudu-love.gif" alt="Медвежонок обнимает большое сердце" onerror="useStickerFallback(this)">
+            <svg class="art short" viewBox="0 0 240 180" role="img" aria-label="Розовый персонаж держит большое сердце">
+              <ellipse cx="120" cy="165" rx="58" ry="8" fill="#f7dce6"/>
+              <path d="M68 154c1-33 13-54 52-54s51 21 52 54z" fill="#f59bb7"/>
+              <circle cx="120" cy="73" r="39" fill="#f7adc4"/>
+              <path d="M88 61l-8-28 27 17m42 12 10-28-29 16" fill="#f7adc4" stroke="#e98ca9" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M92 50l-3-9 12 8m45 1 4-10-13 7" fill="#fff0f4"/>
+              <circle cx="107" cy="70" r="3" fill="#493d49"/><circle cx="133" cy="70" r="3" fill="#493d49"/>
+              <path d="M114 82q6 7 12 0" fill="none" stroke="#a75070" stroke-width="2.5" stroke-linecap="round"/>
+              <ellipse cx="100" cy="81" rx="7" ry="4" fill="#ee789d"/><ellipse cx="140" cy="81" rx="7" ry="4" fill="#ee789d"/>
+              <path d="M120 117c-9-12-26-8-26 6 0 13 26 29 26 29s26-16 26-29c0-14-17-18-26-6z" fill="#e84d72"/>
+              <path d="M67 119l22 9m84-9-22 9" stroke="#f7adc4" stroke-width="12" stroke-linecap="round"/>
+              <path d="M64 48l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1zM177 73l2 5 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z" fill="#f5c35f"/>
+            </svg>
+            <h1>и так... когда ты свободна?</h1>
+            <div class="fields">
+              <label class="field" for="date"><span>Дата</span><input id="date" type="date" value="2026-06-15" required></label>
+              <label class="field" for="time"><span>Время</span><input id="time" type="time" value="19:30" required></label>
+            </div>
+            <button class="pill" type="button" data-next="3">Выбери дату 💖</button>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="3" aria-hidden="true">
+          <div class="paper">
+            <img class="sticker" src="https://media.tenor.com/7vvQ47FLKdsAAAAj/dudu-bubu-having-dinner-dudu-food.gif" alt="Медвежата сидят за столом и едят" onerror="useStickerFallback(this)">
+            <h1>Куда пойдем?</h1>
+            <div class="choices" data-group="place">
+              <button class="choice" type="button" data-value="Ресторан" aria-pressed="false"><span>🍽️</span><span>Ресторан</span></button>
+              <button class="choice" type="button" data-value="Кино" aria-pressed="false"><span>🎬</span><span>Кино</span></button>
+              <button class="choice" type="button" data-value="Парк" aria-pressed="false"><span>🌷</span><span>Парк</span></button>
+              <button class="choice" type="button" data-value="Театр" aria-pressed="false"><span>🎭</span><span>Театр</span></button>
+            </div>
+            <button class="pill" type="button" data-next="4">Дальше</button>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="4" aria-hidden="true">
+          <div class="paper">
+            <img class="sticker" src="https://media1.tenor.com/m/Yd5l8St0sHkAAAAd/bubu-dudu-eating-bubu-dudu-ramen.gif" alt="Медвежата едят лапшу" onerror="useStickerFallback(this)">
+            <p class="eyebrow">И еще один важный выбор</p>
+            <h1>Что будем кушать?</h1>
+            <div class="choices" data-group="food">
+              <button class="choice" type="button" data-value="Пицца" data-emoji="🍕" aria-pressed="false"><span>🍕</span><span>Пицца</span></button>
+              <button class="choice" type="button" data-value="Суши" data-emoji="🍣" aria-pressed="false"><span>🍣</span><span>Суши</span></button>
+              <button class="choice" type="button" data-value="Бургеры" data-emoji="🍔" aria-pressed="false"><span>🍔</span><span>Бургеры</span></button>
+              <button class="choice" type="button" data-value="Десерты" data-emoji="🍰" aria-pressed="false"><span>🍰</span><span>Десерты</span></button>
+            </div>
+            <button class="pill" type="button" data-next="5">Это будет вкусно</button>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="5" aria-hidden="true">
+          <div class="paper">
+            <img class="sticker" src="https://media.tenor.com/PHSt6JUShPgAAAAj/bubu-dudu-sseeyall.gif" alt="Медвежата обнимаются с сердцем" onerror="useStickerFallback(this)">
+            <h1>рад, что не отказалась.</h1>
+            <p class="subtitle" id="summary">Будь готова к 15 июня 2026 г. в 19:30, я приеду за тобой</p>
+            <div class="calendar-actions">
+              <button class="pill" id="ics-button" type="button">Добавить в календарь</button>
+              <a class="calendar" id="google-calendar" target="_blank" rel="noopener noreferrer">Открыть Google Calendar</a>
+            </div>
+            <p class="status" id="send-status" role="status" aria-live="polite"></p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Add a deployed Google Apps Script web app URL here to forward the choices.
+    const APPS_SCRIPT_WEBHOOK = "";
+    const STICKER_GIFS = {
+      catHeart: "https://media1.tenor.com/m/C_2ikwupY4cAAAAd/goma-heart-goma-love.gif",
+      dance: "https://media.tenor.com/CDg7uH_hD84AAAAj/tkthao219-bubududu.gif",
+      heart: "https://media.tenor.com/quCBIuCuFJwAAAAj/bubu-holding-and-squeezing-a-heart-bubu-dudu-love.gif",
+      dinner: "https://media.tenor.com/7vvQ47FLKdsAAAAj/dudu-bubu-having-dinner-dudu-food.gif",
+      noodles: "https://media1.tenor.com/m/Yd5l8St0sHkAAAAd/bubu-dudu-eating-bubu-dudu-ramen.gif",
+      hug: "https://media.tenor.com/PHSt6JUShPgAAAAj/bubu-dudu-sseeyall.gif"
+    };
+    const STICKER_FALLBACK = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><style>@keyframes bob{50%{transform:translateY(-5px)}}@keyframes beat{50%{transform:scale(1.14)}}</style><g style="transform-origin:80px 100px;animation:bob 1.6s ease-in-out infinite"><path d="M35 119c0-29 17-43 45-43s45 14 45 43v16H35z" fill="#f3a2bb"/><circle cx="55" cy="63" r="20" fill="#f3a2bb"/><circle cx="105" cy="63" r="20" fill="#fff" stroke="#e8dce2" stroke-width="3"/><circle cx="55" cy="63" r="9" fill="#ffdce8"/><circle cx="105" cy="63" r="9" fill="#f8d5df"/><ellipse cx="80" cy="82" rx="48" ry="39" fill="#fff" stroke="#e8dce2" stroke-width="3"/><circle cx="65" cy="78" r="3" fill="#493d49"/><circle cx="95" cy="78" r="3" fill="#493d49"/><path d="M76 87q4 5 8 0" fill="none" stroke="#a75070" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="57" cy="88" rx="7" ry="4" fill="#f2a6b7"/><ellipse cx="103" cy="88" rx="7" ry="4" fill="#f2a6b7"/></g><path d="M125 37c-8-10-22-2-15 9l15 14 15-14c7-11-7-19-15-9z" fill="#ed5b91" style="transform-origin:125px 47px;animation:beat 1s ease-in-out infinite"/></svg>`);
+    Object.values(STICKER_GIFS).forEach((source) => {
+      const image = new Image();
+      image.src = source;
+    });
+
+    function useStickerFallback(image) {
+      image.onerror = null;
+      image.src = STICKER_FALLBACK;
+    }
+
+    const selection = { place: "", food: "" };
+    const screens = [...document.querySelectorAll(".screen")];
+    let submitted = false;
+
+    function showScreen(index) {
+      screens.forEach((screen, current) => {
+        const active = current === index;
+        screen.classList.toggle("active", active);
+        screen.setAttribute("aria-hidden", String(!active));
+      });
+      if (index === 5) finishInvite();
+    }
+
+    document.querySelectorAll("[data-next]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const next = Number(button.dataset.next);
+        if (next === 3 && (!document.querySelector("#date").value || !document.querySelector("#time").value)) {
+          document.querySelector("#date").reportValidity();
+          document.querySelector("#time").reportValidity();
+          return;
+        }
+        if (next === 4 && !selection.place) {
+          document.querySelector('[data-group="place"] .choice').focus();
+          return;
+        }
+        if (next === 5 && !selection.food) {
+          document.querySelector('[data-group="food"] .choice').focus();
+          return;
+        }
+        showScreen(next);
+      });
+    });
+
+    document.querySelectorAll(".choices").forEach((group) => {
+      group.addEventListener("click", (event) => {
+        const choice = event.target.closest(".choice");
+        if (!choice) return;
+        group.querySelectorAll(".choice").forEach((item) => item.setAttribute("aria-pressed", String(item === choice)));
+        selection[group.dataset.group] = choice.dataset.value;
+      });
+    });
+
+    const noButton = document.querySelector("#no-button");
+    const runway = document.querySelector("#runway");
+    function moveNoButton(event) {
+      event?.preventDefault();
+      const area = runway.getBoundingClientRect();
+      const button = noButton.getBoundingClientRect();
+      const maxX = Math.max(0, area.width - button.width);
+      const maxY = Math.max(0, area.height - button.height);
+      noButton.style.left = `${Math.random() * maxX}px`;
+      noButton.style.top = `${Math.random() * maxY}px`;
+      noButton.style.transform = "none";
+    }
+    noButton.addEventListener("mouseover", moveNoButton);
+    noButton.addEventListener("touchstart", moveNoButton, { passive: false });
+    noButton.addEventListener("click", moveNoButton);
+    noButton.addEventListener("focus", moveNoButton);
+
+    function localStart() {
+      const [year, month, day] = document.querySelector("#date").value.split("-").map(Number);
+      const [hour, minute] = document.querySelector("#time").value.split(":").map(Number);
+      return new Date(year, month - 1, day, hour, minute, 0);
+    }
+
+    function calendarStamp(date) {
+      return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    }
+
+    function escapeIcs(value) {
+      return value.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+    }
+
+    function finishInvite() {
+      const start = localStart();
+      const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+      const dateText = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" }).format(start);
+      const formattedDate = `${dateText.replace(/\sг\.$/, "")} г.`;
+      const time = document.querySelector("#time").value;
+      const details = `Будь готова к ${formattedDate} в ${time}, я приеду за тобой`;
+      document.querySelector("#summary").textContent = details;
+
+      const title = `Свидание: ${selection.place} и ${selection.food}`;
+      const googleParams = new URLSearchParams({
+        action: "TEMPLATE",
+        text: title,
+        dates: `${calendarStamp(start)}/${calendarStamp(end)}`,
+        details: `${details}. Еда: ${selection.food}.`,
+        location: selection.place
+      });
+      document.querySelector("#google-calendar").href = `https://calendar.google.com/calendar/render?${googleParams}`;
+      document.querySelector("#ics-button").onclick = () => downloadCalendar(title, details, selection.place, start, end);
+
+      if (!submitted) {
+        submitted = true;
+        sendResponse({ date: document.querySelector("#date").value, time, place: selection.place, food: selection.food });
+      }
+    }
+
+    function downloadCalendar(title, details, place, start, end) {
+      const stamp = calendarStamp(new Date());
+      const content = [
+        "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Date Invitation//RU", "CALSCALE:GREGORIAN", "BEGIN:VEVENT",
+        `UID:${crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}@date-invitation`}`,
+        `DTSTAMP:${stamp}`, `DTSTART:${calendarStamp(start)}`, `DTEND:${calendarStamp(end)}`,
+        `SUMMARY:${escapeIcs(title)}`, `DESCRIPTION:${escapeIcs(details)}`, `LOCATION:${escapeIcs(place)}`,
+        "END:VEVENT", "END:VCALENDAR"
+      ].join("\r\n");
+      const url = URL.createObjectURL(new Blob([content], { type: "text/calendar;charset=utf-8" }));
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "svidanie.ics";
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    }
+
+    async function sendResponse(payload) {
+      const status = document.querySelector("#send-status");
+      if (!APPS_SCRIPT_WEBHOOK) {
+        status.textContent = "Ответ не отправлен: не настроен вебхук.";
+        return;
+      }
+      try {
+        await fetch(APPS_SCRIPT_WEBHOOK, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        status.textContent = "Ответ отправлен. До встречи!";
+      } catch {
+        status.textContent = "Не удалось отправить ответ. Можно сохранить встречу в календарь.";
+      }
+    }
+  </script>
+</body>
+</html>
